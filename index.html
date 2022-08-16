@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>轮播图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        a {
+            text-decoration: none;
+            color: #333;
+        }
+        li {
+            list-style: none;
+        }
+        .contain {
+            position: absolute;
+            width: 564px;
+            height: 315px;
+            border-radius: 12px;
+            top: 30px;
+            left: 50%;
+            margin-left: -300px;
+            overflow: hidden;
+        }
+        .arrow-l,
+        .arrow-r {
+            display: none;
+            position: absolute;
+            float: left;
+            width: 24px;
+            height: 40px;
+            top: 50%;
+            margin-top: -20px;
+            background: rgba(0, 0, 0, .2);
+            color: rgba(0, 0, 0, .6);
+            border-radius: 5px;
+            z-index: 2;
+            text-align: center;
+            line-height: 40px;
+        }
+        .arrow-r {
+            right: 0;
+        }
+        .contain img {
+            width: 564px;
+            height: 315px;
+            border-radius: 12px;
+        }
+        .contain ul {
+            position: absolute;
+            width: 600%;
+            left: 0;
+        }
+        .contain ul li {
+            float: left;
+        }
+        .contain ol {
+            position: absolute;
+            bottom: 20px;
+            left: 35px;
+        }
+        .contain ol li {
+            float: left;
+            margin-right: 3px;
+            border: 1px solid #ccc;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
+            background-color: white;
+        }
+        .current.current {
+            background-color: orange;
+        }
+    </style>
+    <script src="轮播图.js"></script>
+</head>
+<body>
+    <div class="contain">
+        <!-- 左右按钮 -->
+        <a href="JavaScript:;" class="arrow-l">&lt</a>
+        <a href="JavaScript:;" class="arrow-r">></a>
+        <!-- 图片 -->
+        <ul>
+            <li><a href="JavaScript:;"><img src="图片/1.jpg"></a></li>
+            <li><a href="JavaScript:;"><img src="图片/2.png"></a></li>
+            <li><a href="JavaScript:;"><img src="图片/3.png"></a></li>
+            <li><a href="JavaScript:;"><img src="图片/4.jpg"></a></li>
+            <li><a href="JavaScript:;"><img src="图片/5.jpg"></a></li>
+        </ul>
+        <ol>
+            <!-- 动态生成小圆圈 -->
+        </ol>
+    </div>
+    <script>
+        window.addEventListener('load',function(){
+            var arrow_l = document.querySelector('.arrow-l');
+            var arrow_r = document.querySelector('.arrow-r');
+            var contain = document.querySelector('.contain');
+            var ul = document.querySelector('ul');
+            // 左右箭头隐藏显示
+            contain.addEventListener('mouseenter',function(){
+                arrow_l.style.display = 'block';
+                arrow_r.style.display = 'block';
+                clearInterval(timer);
+                timer = null;
+            })
+            contain.addEventListener('mouseleave',function(){
+                arrow_l.style.display = 'none';
+                arrow_r.style.display = 'none';
+                timer = setInterval(function(){
+                    var olli = document.querySelector('.current');
+                    var index = olli.getAttribute('index');
+                    ol.children[index].className = '';
+                    index ++;
+                    anime(ul,- contain.offsetWidth * index);
+                    if(index >= ol.children.length){
+                        index = 0;
+                        console.log(ol.children.length);
+                    }
+                    ol.children[index].className = 'current';
+                },1500);
+            })
+            var circle = document.querySelector('ul').children;
+            var ol = document.querySelector('ol');
+            // 生成小圆圈
+            for(var i = 0;i < circle.length; i++){
+                var li = document.createElement('li');
+                ol.appendChild(li);
+                li.addEventListener('click',function(){
+                    for(var j = 0;j < circle.length; j++){
+                        ol.children[j].className = '';
+                    }
+                    this.className = 'current';
+                    anime(ul,- this.getAttribute('index') * contain.offsetWidth);
+                })
+                li.setAttribute('index',i);
+            }
+            ol.children[0].className = 'current';//刚打开时显示的是第一张
+            //克隆第一张图片,点击右按钮
+            var first = ul.children[0].cloneNode(true);
+            ul.appendChild(first);
+            arrow_r.addEventListener('click',function(){
+                var olli = document.querySelector('.current');
+                var index = olli.getAttribute('index');
+                ol.children[index].className = '';
+                index ++;
+                anime(ul,- contain.offsetWidth * index);
+                if(index >= ol.children.length){
+                    index = 0;
+                    console.log(ol.children.length);
+                }
+                ol.children[index].className = 'current';
+            })
+            //点击左按钮
+            arrow_l.addEventListener('click',function(){
+                var olli = document.querySelector('.current');
+                var index = olli.getAttribute('index');
+                ol.children[index].className = '';
+                index --;
+                if(index >= 0){
+                    anime(ul,- contain.offsetWidth * index);
+                }else if(index < 0){
+                    index = ol.children.length - 1;
+                    anime(ul,- contain.offsetWidth * index)
+                    console.log(ol.children.length);
+                }
+                ol.children[index].className = 'current';
+            })
+            //计时器，自动轮播
+            var timer = setInterval(function(){
+                var olli = document.querySelector('.current');
+                var index = olli.getAttribute('index');
+                ol.children[index].className = '';
+                index ++;
+                anime(ul,- contain.offsetWidth * index);
+                if(index >= ol.children.length){
+                    index = 0;
+                    console.log(ol.children.length);
+                }
+                ol.children[index].className = 'current';
+            },1500);
+        })
+    </script>
+</body>
+</html>
